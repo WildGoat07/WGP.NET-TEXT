@@ -45,6 +45,18 @@ namespace WGP.TEXT
         /// </summary>
         public Color Color
         {
+            get => _color[0];
+            set
+            {
+                for (int i = 0; i < 4; i++)
+                    _color[i] = value;
+            }
+        }
+        /// <summary>
+        /// The color of the 4 corners of each glyph.
+        /// </summary>
+        public Color[] CornersColor
+        {
             get => _color;
             set
             {
@@ -68,11 +80,11 @@ namespace WGP.TEXT
         private List<Glyph> glyphs;
         private bool requireUpdate;
         private Font _font;
-        private Color _color;
+        private Color[] _color;
         private RectangleShape underline;
         private RectangleShape strikeThrough;
         private SFML.Graphics.Text.Styles _style;
-        private Sprite buffer;
+        private Vertex[] buffer;
 
         /// <summary>
         /// Constructor.
@@ -86,11 +98,11 @@ namespace WGP.TEXT
             glyphs = new List<Glyph>();
             String = text;
             Font = font;
-            Color = color;
             Style = styles;
-            buffer = new Sprite();
             underline = new RectangleShape();
             strikeThrough = new RectangleShape();
+            CornersColor = new Color[4];
+            Color = color;
         }
         /// <summary>
         /// Updates the internal components. Shouldn't be used normaly.
@@ -105,8 +117,32 @@ namespace WGP.TEXT
                     glyphs.Add(Font.GetGlyph(item));
                 }
                 requireUpdate = false;
-                buffer.Texture = Font.Texture;
-                buffer.Color = Color;
+                buffer = new Vertex[String.Count() * 4];
+                SFML.System.Vector2f offset = new SFML.System.Vector2f();
+                for(int i = 0;i < glyphs.Count();i++)
+                {
+                    if (String[i] != '\n')
+                    {
+                        var tmp = glyphs[i];
+                        for (int j = 0; j < 4; j++)
+                            buffer[i * 4 + j].Color = CornersColor[j];
+                        buffer[i * 4].TexCoords = new SFML.System.Vector2f(tmp.TextureRect.Left, tmp.TextureRect.Top);
+                        buffer[i * 4 + 1].TexCoords = new SFML.System.Vector2f(tmp.TextureRect.Left + tmp.TextureRect.Width, tmp.TextureRect.Top);
+                        buffer[i * 4 + 2].TexCoords = new SFML.System.Vector2f(tmp.TextureRect.Left + tmp.TextureRect.Width, tmp.TextureRect.Top + tmp.TextureRect.Height);
+                        buffer[i * 4 + 3].TexCoords = new SFML.System.Vector2f(tmp.TextureRect.Left, tmp.TextureRect.Top + tmp.TextureRect.Height);
+
+                        buffer[i * 4].Position = offset + new SFML.System.Vector2f(tmp.Bounds.Left, tmp.Bounds.Top);
+                        buffer[i * 4 + 1].Position = offset + new SFML.System.Vector2f(tmp.Bounds.Left + tmp.Bounds.Width, tmp.Bounds.Top);
+                        buffer[i * 4 + 2].Position = offset + new SFML.System.Vector2f(tmp.Bounds.Left + tmp.Bounds.Width, tmp.Bounds.Top + tmp.Bounds.Height);
+                        buffer[i * 4 + 3].Position = offset + new SFML.System.Vector2f(tmp.Bounds.Left, tmp.Bounds.Top + tmp.Bounds.Height);
+                        offset.X += tmp.GetGlyphAdvancePatch();
+                    }
+                    else
+                    {
+                        offset.X = 0;
+                        offset.Y += Font.LineSpacing;
+                    }
+                }
                 if ((Style & SFML.Graphics.Text.Styles.Underlined) != 0)
                 {
                     underline.FillColor = Color;
@@ -129,33 +165,8 @@ namespace WGP.TEXT
                 states.Transform *= tr;
             }
             Update();
-            var secStates = new RenderStates(states);
-            for (int i = 0;i<glyphs.Count;i++)
-            {
-                if (String[i] != '\n')
-                {
-                    buffer.TextureRect = glyphs[i].TextureRect;
-                    buffer.Position = new SFML.System.Vector2f(glyphs[i].Bounds.Left, glyphs[i].Bounds.Top);
-                    target.Draw(buffer, secStates);
-                    if ((Style & SFML.Graphics.Text.Styles.Underlined) != 0)
-                    {
-                        underline.Size = new SFML.System.Vector2f(glyphs[i].GetGlyphAdvancePatch(), Font.UnderlineThickness);
-                        target.Draw(underline, secStates);
-                    }
-                    if ((Style & SFML.Graphics.Text.Styles.StrikeThrough) != 0)
-                    {
-                        strikeThrough.Size = new SFML.System.Vector2f(glyphs[i].GetGlyphAdvancePatch(), Font.UnderlineThickness);
-                        target.Draw(strikeThrough, secStates);
-                    }
-
-                    secStates.Transform.Translate(glyphs[i].GetGlyphAdvancePatch(), 0);
-                }
-                else
-                {
-                    secStates = new RenderStates(states);
-                    secStates.Transform.Translate(0, Font.LineSpacing);
-                }
-            }
+            states.Texture = Font.Texture;
+            target.Draw(buffer, PrimitiveType.Quads, states);
         }
         /// <summary>
         /// Returns the local bounds of the text.

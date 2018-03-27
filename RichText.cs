@@ -23,9 +23,13 @@ namespace WGP.TEXT
             /// </summary>
             public string Text;
             /// <summary>
-            /// The color of the text;
+            /// The color of the text.
             /// </summary>
             public Color Color;
+            /// <summary>
+            /// The corner colors of the text. If set not set, the color used will be the property Color.
+            /// </summary>
+            public Color[] CornersColor;
             /// <summary>
             /// The style of the text;
             /// </summary>
@@ -147,6 +151,8 @@ namespace WGP.TEXT
                 foreach(var word in words)
                 {
                     Text tempText = new Text(word, Font, part.Color, part.Style);
+                    if (part.CornersColor != null)
+                        tempText.CornersColor = part.CornersColor;
                     if (MaxWidth <= 0)
                     {
                         tempText.Position = offset;

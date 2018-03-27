@@ -36,7 +36,7 @@ namespace WGP.TEXT
         /// <summary>
         /// Gets the font texture.
         /// </summary>
-        public SFML.Graphics.Texture Texture => InternFont.GetTexture(CharSize);
+        public SFML.Graphics.Texture Texture { get; private set; }
         /// <summary>
         /// Gets a specific glyph. The glyphs are already stored at the beginning, so it won't crash.
         /// </summary>
@@ -56,6 +56,11 @@ namespace WGP.TEXT
             glyphs = new SFML.Graphics.Glyph[256];
             for (char i = (char)0; i < 256; i++)
                 glyphs[i] = InternFont.GetGlyph(i, CharSize, bold);
+            Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
+        }
+        private Font()
+        {
+
         }
         /// <summary>
         /// Constructor.
@@ -70,6 +75,7 @@ namespace WGP.TEXT
             glyphs = new SFML.Graphics.Glyph[256];
             for (char i = (char)0; i < 256; i++)
                 glyphs[i] = InternFont.GetGlyph(i, CharSize, bold);
+            Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
         }
         /// <summary>
         /// Constructor.
@@ -84,6 +90,7 @@ namespace WGP.TEXT
             glyphs = new SFML.Graphics.Glyph[256];
             for (char i = (char)0; i < 256; i++)
                 glyphs[i] = InternFont.GetGlyph(i, CharSize, bold);
+            Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
         }
     }
 }
