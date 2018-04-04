@@ -13,6 +13,7 @@ namespace WGP.TEXT
     {
         private SFML.Graphics.Font InternFont;
         private SFML.Graphics.Glyph[] glyphs;
+        private SFML.Graphics.Glyph[] boldGlyphs;
         /// <summary>
         /// Gets the font infos.
         /// </summary>
@@ -41,21 +42,30 @@ namespace WGP.TEXT
         /// Gets a specific glyph. The glyphs are already stored at the beginning, so it won't crash.
         /// </summary>
         /// <param name="code">ASCII code.</param>
+        /// <param name="bold">True if the glyph is bold.</param>
         /// <returns>Requested glyph.</returns>
-        public SFML.Graphics.Glyph GetGlyph(char code) => glyphs[code];
+        public SFML.Graphics.Glyph GetGlyph(char code, bool bold)
+        {
+            if (bold)
+                return boldGlyphs[code];
+            else
+                return glyphs[code];
+        }
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="path">Path of the file.</param>
         /// <param name="charSize">Character size.</param>
-        /// <param name="bold">True for bold.</param>
-        public Font(string path, uint charSize, bool bold = false)
+        public Font(string path, uint charSize)
         {
             InternFont = new SFML.Graphics.Font(path);
             CharSize = charSize;
             glyphs = new SFML.Graphics.Glyph[256];
+            boldGlyphs = new SFML.Graphics.Glyph[256];
             for (char i = (char)0; i < 256; i++)
-                glyphs[i] = InternFont.GetGlyph(i, CharSize, bold);
+                glyphs[i] = InternFont.GetGlyph(i, CharSize, false);
+            for (char i = (char)0; i < 256; i++)
+                boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true);
             Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
         }
         private Font()
@@ -67,14 +77,16 @@ namespace WGP.TEXT
         /// </summary>
         /// <param name="stream">Input stream.</param>
         /// <param name="charSize">Character size.</param>
-        /// <param name="bold">True for bold.</param>
-        public Font(System.IO.Stream stream, uint charSize, bool bold = false)
+        public Font(System.IO.Stream stream, uint charSize)
         {
             InternFont = new SFML.Graphics.Font(stream);
             CharSize = charSize;
             glyphs = new SFML.Graphics.Glyph[256];
+            boldGlyphs = new SFML.Graphics.Glyph[256];
             for (char i = (char)0; i < 256; i++)
-                glyphs[i] = InternFont.GetGlyph(i, CharSize, bold);
+                glyphs[i] = InternFont.GetGlyph(i, CharSize, false);
+            for (char i = (char)0; i < 256; i++)
+                boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true);
             Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
         }
         /// <summary>
@@ -82,14 +94,16 @@ namespace WGP.TEXT
         /// </summary>
         /// <param name="data">Input data.</param>
         /// <param name="charSize">Character size.</param>
-        /// <param name="bold">True for bold.</param>
-        public Font(byte[] data, uint charSize, bool bold = false)
+        public Font(byte[] data, uint charSize)
         {
             InternFont = new SFML.Graphics.Font(data);
             CharSize = charSize;
             glyphs = new SFML.Graphics.Glyph[256];
+            boldGlyphs = new SFML.Graphics.Glyph[256];
             for (char i = (char)0; i < 256; i++)
-                glyphs[i] = InternFont.GetGlyph(i, CharSize, bold);
+                glyphs[i] = InternFont.GetGlyph(i, CharSize, false);
+            for (char i = (char)0; i < 256; i++)
+                boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true);
             Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
         }
     }

@@ -114,7 +114,7 @@ namespace WGP.TEXT
                 glyphs.Clear();
                 foreach (var item in String)
                 {
-                    glyphs.Add(Font.GetGlyph(item));
+                    glyphs.Add(Font.GetGlyph(item, (Style & SFML.Graphics.Text.Styles.Bold) != 0));
                 }
                 requireUpdate = false;
                 buffer = new Vertex[String.Count() * 4];
