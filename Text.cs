@@ -45,11 +45,11 @@ namespace WGP.TEXT
         /// </summary>
         public Color Color
         {
-            get => _color[0];
+            get => CornersColor[0];
             set
             {
                 for (int i = 0; i < 4; i++)
-                    _color[i] = value;
+                    CornersColor[i] = value;
             }
         }
         /// <summary>
@@ -57,7 +57,11 @@ namespace WGP.TEXT
         /// </summary>
         public Color[] CornersColor
         {
-            get => _color;
+            get
+            {
+                requireUpdate = true;
+                return _color;
+            }
             set
             {
                 _color = value;
