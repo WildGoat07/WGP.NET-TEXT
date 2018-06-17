@@ -107,6 +107,7 @@ namespace WGP.TEXT
             strikeThrough = new RectangleShape();
             CornersColor = new Color[4];
             Color = color;
+            requireUpdate = true;
         }
         /// <summary>
         /// Updates the internal components. Shouldn't be used normaly.
