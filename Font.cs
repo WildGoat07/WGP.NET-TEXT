@@ -56,16 +56,17 @@ namespace WGP.TEXT
         /// </summary>
         /// <param name="path">Path of the file.</param>
         /// <param name="charSize">Character size.</param>
-        public Font(string path, uint charSize)
+        /// <param name="outline">Outline thickness (Optional).</param>
+        public Font(string path, uint charSize, float outline = 0)
         {
             InternFont = new SFML.Graphics.Font(path);
             CharSize = charSize;
             glyphs = new SFML.Graphics.Glyph[256];
             boldGlyphs = new SFML.Graphics.Glyph[256];
             for (char i = (char)0; i < 256; i++)
-                glyphs[i] = InternFont.GetGlyph(i, CharSize, false);
+                glyphs[i] = InternFont.GetGlyph(i, CharSize, false, outline);
             for (char i = (char)0; i < 256; i++)
-                boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true);
+                boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true, outline);
             Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
         }
         private Font()
@@ -77,16 +78,17 @@ namespace WGP.TEXT
         /// </summary>
         /// <param name="stream">Input stream.</param>
         /// <param name="charSize">Character size.</param>
-        public Font(System.IO.Stream stream, uint charSize)
+        /// <param name="outline">Outline thickness (Optional).</param>
+        public Font(System.IO.Stream stream, uint charSize, float outline = 0)
         {
             InternFont = new SFML.Graphics.Font(stream);
             CharSize = charSize;
             glyphs = new SFML.Graphics.Glyph[256];
             boldGlyphs = new SFML.Graphics.Glyph[256];
             for (char i = (char)0; i < 256; i++)
-                glyphs[i] = InternFont.GetGlyph(i, CharSize, false);
+                glyphs[i] = InternFont.GetGlyph(i, CharSize, false, outline);
             for (char i = (char)0; i < 256; i++)
-                boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true);
+                boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true, outline);
             Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
         }
         /// <summary>
@@ -94,16 +96,17 @@ namespace WGP.TEXT
         /// </summary>
         /// <param name="data">Input data.</param>
         /// <param name="charSize">Character size.</param>
-        public Font(byte[] data, uint charSize)
+        /// <param name="outline">Outline thickness (Optional).</param>
+        public Font(byte[] data, uint charSize, float outline = 0)
         {
             InternFont = new SFML.Graphics.Font(data);
             CharSize = charSize;
             glyphs = new SFML.Graphics.Glyph[256];
             boldGlyphs = new SFML.Graphics.Glyph[256];
             for (char i = (char)0; i < 256; i++)
-                glyphs[i] = InternFont.GetGlyph(i, CharSize, false);
+                glyphs[i] = InternFont.GetGlyph(i, CharSize, false, outline);
             for (char i = (char)0; i < 256; i++)
-                boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true);
+                boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true, outline);
             Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
         }
     }
