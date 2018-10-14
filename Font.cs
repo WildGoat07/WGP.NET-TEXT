@@ -17,19 +17,23 @@ namespace WGP.TEXT
         /// <summary>
         /// Gets the font infos.
         /// </summary>
-        public SFML.Graphics.Font.Info Info => InternFont.GetInfo();
+        public SFML.Graphics.Font.Info Info { get; private set; }
         /// <summary>
         /// Gets the line spacing.
         /// </summary>
-        public float LineSpacing => InternFont.GetLineSpacing(CharSize);
+        public float LineSpacing { get; private set; }
         /// <summary>
         /// Gets the underline position of the font.
         /// </summary>
-        public float UnderlinePosition => InternFont.GetUnderlinePosition(CharSize);
+        public float UnderlinePosition { get; private set; }
         /// <summary>
         /// Gets the underline thickness of the line.
         /// </summary>
-        public float UnderlineThickness => InternFont.GetUnderlineThickness(CharSize);
+        public float UnderlineThickness { get; private set; }
+        /// <summary>
+        /// Gets the underline thickness of the line.
+        /// </summary>
+        public float OutlineThickness { get; private set; }
         /// <summary>
         /// Gets the character size defined at the creation (not modifiable, sadly).
         /// </summary>
@@ -51,6 +55,13 @@ namespace WGP.TEXT
             else
                 return glyphs[code];
         }
+        private void Init()
+        {
+            Info = InternFont.GetInfo();
+            LineSpacing = InternFont.GetLineSpacing(CharSize);
+            UnderlinePosition = InternFont.GetUnderlinePosition(CharSize);
+            UnderlineThickness = InternFont.GetUnderlineThickness(CharSize);
+        }
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -68,10 +79,8 @@ namespace WGP.TEXT
             for (char i = (char)0; i < 256; i++)
                 boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true, outline);
             Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
-        }
-        private Font()
-        {
-
+            OutlineThickness = outline;
+            Init();
         }
         /// <summary>
         /// Constructor.
@@ -90,6 +99,8 @@ namespace WGP.TEXT
             for (char i = (char)0; i < 256; i++)
                 boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true, outline);
             Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
+            OutlineThickness = outline;
+            Init();
         }
         /// <summary>
         /// Constructor.
@@ -108,6 +119,8 @@ namespace WGP.TEXT
             for (char i = (char)0; i < 256; i++)
                 boldGlyphs[i] = InternFont.GetGlyph(i, CharSize, true, outline);
             Texture = new SFML.Graphics.Texture(InternFont.GetTexture(charSize));
+            OutlineThickness = outline;
+            Init();
         }
     }
 }

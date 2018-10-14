@@ -59,7 +59,6 @@ namespace WGP.TEXT
         {
             get
             {
-                requireUpdate = true;
                 return _color;
             }
             set
@@ -121,7 +120,6 @@ namespace WGP.TEXT
                 {
                     glyphs.Add(Font.GetGlyph(item, (Style & SFML.Graphics.Text.Styles.Bold) != 0));
                 }
-                requireUpdate = false;
                 buffer = new Vertex[String.Count() * 4];
                 SFML.System.Vector2f offset = new SFML.System.Vector2f();
                 for(int i = 0;i < glyphs.Count();i++)
@@ -140,7 +138,7 @@ namespace WGP.TEXT
                         buffer[i * 4 + 1].Position = offset + new SFML.System.Vector2f(tmp.Bounds.Left + tmp.Bounds.Width, tmp.Bounds.Top);
                         buffer[i * 4 + 2].Position = offset + new SFML.System.Vector2f(tmp.Bounds.Left + tmp.Bounds.Width, tmp.Bounds.Top + tmp.Bounds.Height);
                         buffer[i * 4 + 3].Position = offset + new SFML.System.Vector2f(tmp.Bounds.Left, tmp.Bounds.Top + tmp.Bounds.Height);
-                        offset.X += tmp.GetGlyphAdvancePatch();
+                        offset.X += tmp.Advance;
                     }
                     else
                     {
@@ -148,15 +146,31 @@ namespace WGP.TEXT
                         offset.Y += Font.LineSpacing;
                     }
                 }
+                requireUpdate = false;
                 if ((Style & SFML.Graphics.Text.Styles.Underlined) != 0)
                 {
-                    underline.FillColor = Color;
+                    if (Font.OutlineThickness == 0)
+                        underline.FillColor = Color;
+                    else
+                    {
+                        underline.FillColor = Color.Transparent;
+                        underline.OutlineColor = Color;
+                        underline.OutlineThickness = Font.OutlineThickness;
+                    }
+                    underline.Size = new SFML.System.Vector2f(FindCharacterPos(String.Length).X, Font.UnderlineThickness);
                     underline.Position = new SFML.System.Vector2f(0, Font.UnderlinePosition);
                 }
                 if ((Style & SFML.Graphics.Text.Styles.StrikeThrough) != 0)
                 {
-                    strikeThrough.FillColor = Color;
-                    strikeThrough.Size = new SFML.System.Vector2f(0, Font.UnderlineThickness);
+                    if (Font.OutlineThickness == 0)
+                        strikeThrough.FillColor = Color;
+                    else
+                    {
+                        strikeThrough.FillColor = Color.Transparent;
+                        strikeThrough.OutlineColor = Color;
+                        strikeThrough.OutlineThickness = Font.OutlineThickness;
+                    }
+                    strikeThrough.Size = new SFML.System.Vector2f(FindCharacterPos(String.Length).X, Font.UnderlineThickness);
                     strikeThrough.Position = new SFML.System.Vector2f(0, (float)CharSize / -3 + strikeThrough.Size.Y / 2);
                 }
             }
@@ -172,6 +186,10 @@ namespace WGP.TEXT
             Update();
             states.Texture = Font.Texture;
             target.Draw(buffer, PrimitiveType.Quads, states);
+            if ((Style & SFML.Graphics.Text.Styles.StrikeThrough) != 0)
+                target.Draw(strikeThrough, states);
+            if ((Style & SFML.Graphics.Text.Styles.Underlined) != 0)
+                target.Draw(underline, states);
         }
         /// <summary>
         /// Returns the local bounds of the text.
@@ -197,7 +215,7 @@ namespace WGP.TEXT
                     botright.X = Utilities.Max(offset.X + glyphs[i].Bounds.Width + glyphs[i].Bounds.Left, botright.X);
                     botright.Y = Utilities.Max(offset.Y + glyphs[i].Bounds.Height + glyphs[i].Bounds.Top, botright.Y);
 
-                    offset.X += glyphs[i].GetGlyphAdvancePatch();
+                    offset.X += glyphs[i].Advance;
                 }
             }
             return new FloatRect(topleft, botright - topleft);
@@ -215,13 +233,13 @@ namespace WGP.TEXT
         /// </summary>
         /// <param name="pos">Character to find.</param>
         /// <returns>Character position.</returns>
-        public SFML.System.Vector2f FindCharacterPos(uint pos)
+        public SFML.System.Vector2f FindCharacterPos(int pos)
         {
             Update();
             SFML.System.Vector2f offset = new SFML.System.Vector2f();
             for(int i = 0;i<pos;i++)
             {
-                offset.X += glyphs[i].GetGlyphAdvancePatch();
+                offset.X += glyphs[i].Advance;
                 if (String[i] == '\n')
                 {
                     offset.X = 0;
@@ -229,14 +247,6 @@ namespace WGP.TEXT
                 }
             }
             return offset;
-        }
-    }
-    internal static class GlyphPatcher
-    {
-        internal static float GetGlyphAdvancePatch(this Glyph glyph)
-        {
-            var bytes = BitConverter.GetBytes(glyph.Advance);
-            return BitConverter.ToSingle(bytes, 0);
         }
     }
 }

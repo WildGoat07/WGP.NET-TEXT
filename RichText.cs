@@ -156,11 +156,11 @@ namespace WGP.TEXT
                     if (MaxWidth <= 0)
                     {
                         tempText.Position = offset;
-                        offset.X += tempText.FindCharacterPos((uint)tempText.String.Count()).X;
+                        offset.X += tempText.FindCharacterPos(tempText.String.Count()).X;
                     }
                     else
                     {
-                        float width = tempText.FindCharacterPos((uint)tempText.String.Count()).X;
+                        float width = tempText.FindCharacterPos(tempText.String.Count()).X;
                         if (width + offset.X > MaxWidth)
                         {
                             offset.X = 0;
@@ -169,7 +169,7 @@ namespace WGP.TEXT
                         tempText.Position = offset;
                         offset.X += width;
                     }
-                    Hitboxes.Add(new Hitbox() { Box = new FloatRect(tempText.Position - new Vector2f(0, CharacterSize), tempText.Transform.TransformPoint(tempText.FindCharacterPos((uint)tempText.String.Count())) - (tempText.Position - new Vector2f(0, CharacterSize))), Identifier = part.Identifier });
+                    Hitboxes.Add(new Hitbox() { Box = new FloatRect(tempText.Position - new Vector2f(0, CharacterSize), tempText.Transform.TransformPoint(tempText.FindCharacterPos(tempText.String.Count())) - (tempText.Position - new Vector2f(0, CharacterSize))), Identifier = part.Identifier });
                     if (part.NewLine && i == words.Count - 1)
                     {
                         offset.X = 0;
